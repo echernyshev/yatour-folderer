@@ -5,7 +5,7 @@ import java.io.IOException;
 import java.nio.file.Paths;
 
 /**
- * Утилита для упаковки файлов по папкам для yatour M-06
+ * Утилита для упаковки файлов по папкам для yatour M-06. Данный класс - точка входа в приложение.
  *
  * @author echernyshev
  * @since Jan 2, 2015
@@ -22,7 +22,7 @@ public class YatourFolderer
 
         try
         {
-            MusicFileCopier copier = new MusicFileCopier(Paths.get(args[0]), Paths.get(args[1]));
+            MusicFileCopier copier = MusicFileCopier.create(Paths.get(args[0]), Paths.get(args[1]));
             copier.copyFiles();
         }
         catch (IOException e)

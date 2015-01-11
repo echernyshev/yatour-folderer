@@ -1,6 +1,3 @@
-/**
- *
- */
 package ru.kindteam;
 
 import java.io.IOException;
@@ -23,12 +20,22 @@ public class MusicFileCopier
     private int folderCounter = 0;
     private int fileCounter = MAX_COUNT_IN_FOLDER;
 
-    public MusicFileCopier(Path source, Path target) throws IOException
+    private MusicFileCopier(MusicFileDataSource files, Path target)
     {
-        files = MusicFileDataSource.create(source);
+        this.files = files;
         this.target = target;
     }
 
+    public static MusicFileCopier create(Path source, Path target) throws IOException
+    {
+        return new MusicFileCopier(MusicFileDataSource.create(source), target);
+    }
+
+    /**
+     * Выполнение копирования файлов с заданными параметрами.
+     * 
+     * @throws IOException
+     */
     public void copyFiles() throws IOException
     {
         for (Path source : files)
