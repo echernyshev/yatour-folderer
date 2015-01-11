@@ -2,7 +2,15 @@ package ru.kindteam;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.nio.file.Paths;
+
+import org.apache.commons.cli.BasicParser;
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
 
 /**
  * Утилита для упаковки файлов по папкам для yatour M-06. Данный класс - точка входа в приложение.
@@ -12,17 +20,35 @@ import java.nio.file.Paths;
  */
 public class YatourFolderer
 {
-    private static final String HELP = "Использование команды:\n"
-            + "java -jar yatour-folderer.jar /path/to/input/files /path/to/out";
+    private final static class CopyParameters
+    {
+        CopyParameters(Path source, Path target)
+        {
+            this.source = source;
+            this.target = target;
+        }
+
+        Path source;
+        Path target;
+    }
+
+    private static Options OPTIONS = new Options();
+
+    static
+    {
+        OPTIONS.addOption("in", true, "Input folder, that contains music files to copy.");
+        OPTIONS.addOption("out", true, "Output folder for copying music files.");
+    }
 
     public static void main( String[] args )
     {
-        checkArguments(args);
+        CopyParameters params = parseArguments(args);
+        System.out.println(OPTIONS.toString());
         System.out.println("Processing files");
 
         try
         {
-            MusicFileCopier copier = MusicFileCopier.create(Paths.get(args[0]), Paths.get(args[1]));
+            MusicFileCopier copier = MusicFileCopier.create(params.source, params.target);
             copier.copyFiles();
         }
         catch (IOException e)
@@ -33,28 +59,50 @@ public class YatourFolderer
     }
 
 
-    private static void checkArguments(String[] args)
+    private static CopyParameters parseArguments(String[] args)
     {
-        if (args.length != 2)
+        CommandLineParser parser = new BasicParser();
+        try
         {
-            printHelp("Количество агргументов должно равняться 2");
-            System.exit(1);
+            CommandLine line = parser.parse(OPTIONS, args);
+            if (!line.hasOption("in"))
+            {
+                printUsage("Bad syntax. Argument \"-in\" is required.");
+                System.exit(1);
+            }
+            if (!line.hasOption("out"))
+            {
+                printUsage("Bad syntax. Argument \"-out\" is required.");
+                System.exit(1);
+            }
+            String in = line.getOptionValue("in");
+            String out = line.getOptionValue("out");
+            checkFolder(in);
+            checkFolder(out);
+            return new CopyParameters(Paths.get(in), Paths.get(out));
         }
-        checkFolder(args[0]);
-        checkFolder(args[1]);
+        catch (ParseException e)
+        {
+            printUsage("Parse command error: " + e.getMessage());
+            System.exit(1);
+            return null;
+        }
     }
 
-    private static void printHelp(String error)
+    private static void printUsage(String error)
     {
         System.out.println(error);
-        System.out.println(HELP);
+        HelpFormatter formatter = new HelpFormatter();
+        formatter.printHelp(120,
+                "java -jar yatour-folderer.jar -in /path/to/your/music -out /path/to/yatour/device",
+                "Arguments: ", OPTIONS, "");
     }
 
     private static void checkFolder(String path)
     {
         if (!new File(path).isDirectory())
         {
-            printHelp(path + "\nНе является папкой!");
+            printUsage(path + "\nNot a folder");
             System.exit(1);
         }
     }
