@@ -73,6 +73,7 @@
 							<mainClass>ru.kindteam.YatourFolderer</mainClass>
 						</manifest>
 					</archive>
+					<outputDirectory>${project.build.directory}/jar</outputDirectory>
 				</configuration>
 			</plugin>
 		</plugins>
