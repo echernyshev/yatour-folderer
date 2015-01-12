@@ -4,7 +4,7 @@
 	<groupId>ru.kindteam</groupId>
 	<artifactId>yatour-folderer</artifactId>
 	<packaging>jar</packaging>
-	<version>0.2.SNAPSHOT</version>
+	<version>0.2</version>
 	<name>yatour-folderer</name>
 	<url>http://maven.apache.org</url>
 
