@@ -1,6 +1,6 @@
 /.settings
 .project
 .classpath
-!target/
 target/*
 !target/jar/
+!target/single-jar/
