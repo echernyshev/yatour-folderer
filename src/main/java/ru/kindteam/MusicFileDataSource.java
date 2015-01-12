@@ -13,6 +13,9 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 /**
+ * Data Source для музыкальных файлов. Осуществляет поиск всех музыкальных файлов в заданной папке и предоставляет доступ к итератору списка
+ * {@link Path} отсортированному в по названиям.
+ *
  * @author echernyshev
  * @since Jan 6, 2015
  */
@@ -33,6 +36,12 @@ public class MusicFileDataSource implements Iterable<Path>
         return result;
     }
 
+    @Override
+    public Iterator<Path> iterator()
+    {
+        return files.iterator();
+    }
+
     private void walkFiles() throws IOException
     {
         Files.walkFileTree(source, new SimpleFileVisitor<Path>()
@@ -48,7 +57,7 @@ public class MusicFileDataSource implements Iterable<Path>
             public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException
             {
                 System.out.println("Processing file " + file.toString());
-                if (file.toString().toLowerCase().endsWith(".mp3"))
+                if (isMusicFile(file))
                 {
                     files.add(file);
                 }
@@ -57,9 +66,8 @@ public class MusicFileDataSource implements Iterable<Path>
                 });
     }
 
-    @Override
-    public Iterator<Path> iterator()
+    private boolean isMusicFile(Path file)
     {
-        return files.iterator();
+        return file.toString().toLowerCase().endsWith(".mp3");
     }
 }
